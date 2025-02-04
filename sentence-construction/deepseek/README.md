@@ -207,3 +207,9 @@ For **DeepSeek-V3**, the format that provides better context depends on the task
 - Provide **examples, step-by-step instructions, or role-based context** to guide the model effectively.
 
 By following these guidelines, you can provide better context for DeepSeek-V3 and improve its performance on your specific tasks.
+
+# Prompting Journey Notes
+
+- DeepSeek is correctly respecting the given rules and constraints
+- DeepSeek server is always busy and it takes a lot of retries to respond
+- Retrying the promts many time results to error messages stating that there were too many requests and that I should wait.
