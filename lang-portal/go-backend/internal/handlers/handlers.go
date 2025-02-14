@@ -41,6 +41,22 @@ func (h *Handler) GetWords(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func (h *Handler) GetWordById(w http.ResponseWriter, r *http.Request) {
+	wordID, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		http.Error(w, "Invalid word ID", http.StatusBadRequest)
+		return
+	}
+
+	word, err := h.sqlRepository.FindWordByID(wordID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(word)
+}
+
 func (h *Handler) GetGroups(w http.ResponseWriter, r *http.Request) {
 	params := dto.PaginationParams{
 		Page:   getIntQueryParam(r, "page", 1),

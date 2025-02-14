@@ -29,6 +29,7 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/words", handler.GetWords).Methods("GET")
+	r.HandleFunc("/words/{id}", handler.GetWordById).Methods("GET")
 	r.HandleFunc("/groups", handler.GetGroups).Methods("GET")
 	r.HandleFunc("/groups/{id}", handler.GetGroupWords).Methods("GET")
 	r.HandleFunc("/study_sessions", handler.CreateStudySession).Methods("POST")

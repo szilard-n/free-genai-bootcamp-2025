@@ -57,6 +57,17 @@ func (r *SQLiteRepository) FindAllWords(params dto.PaginationParams) ([]models.W
 	return words, total, nil
 }
 
+// FindWordByID implements WordRepository
+func (r *SQLiteRepository) FindWordByID(id int) (models.Word, error) {
+	var word models.Word
+	err := r.db.QueryRow(`
+		SELECT id, german, english, class
+		FROM words
+		WHERE id = ?`, id).Scan(&word.ID, &word.German, &word.English, &word.Class)
+
+	return word, err
+}
+
 // FindAllGroups implements WordRepository
 func (r *SQLiteRepository) FindAllGroups(params dto.PaginationParams) ([]models.Group, int, error) {
 	// Get total count

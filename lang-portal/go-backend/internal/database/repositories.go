@@ -14,6 +14,7 @@ type StudyRepository interface {
 // WordRepository defines word-related operations
 type WordRepository interface {
 	FindAllWords(params dto.PaginationParams) ([]models.Word, int, error)
+	FindWordByID(id int) (models.Word, error)
 	FindAllGroups(params dto.PaginationParams) ([]models.Group, int, error)
 	FindGroupWords(groupID int, params dto.PaginationParams) ([]models.Word, int, error)
 }
