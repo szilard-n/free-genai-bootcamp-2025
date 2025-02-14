@@ -7,6 +7,7 @@ import (
 	"backend/internal/database"
 	"backend/internal/handlers"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -35,5 +36,12 @@ func main() {
 	r.HandleFunc("/study_sessions", handler.CreateStudySession).Methods("POST")
 	r.HandleFunc("/study_sessions/{id}/review", handler.LogReview).Methods("POST")
 
-	log.Fatal(http.ListenAndServe(":8080", r))
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:8080"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"Content-Type", "Authorization"},
+	})
+
+	corsHandler := c.Handler(r)
+	log.Fatal(http.ListenAndServe(":8081", corsHandler))
 }

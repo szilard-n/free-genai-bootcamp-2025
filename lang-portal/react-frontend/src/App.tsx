@@ -17,7 +17,7 @@ import StudySessions from "./pages/StudySessions";
 import StudySessionShow from "./pages/StudySessionShow";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
-import { ThemeProvider } from "./components/theme-provider";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 const App = () => (
   <ThemeProvider defaultTheme="system" storageKey="app-theme">

@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Monitor, Moon, Sun, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { useTheme } from "@/components/theme-provider";
+import { useTheme } from "@/components/ThemeProvider";
 
 const Settings = () => {
   const { theme, setTheme } = useTheme();

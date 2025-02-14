@@ -25,6 +25,8 @@ func (h *Handler) GetWords(w http.ResponseWriter, r *http.Request) {
 		Order:  r.URL.Query().Get("order"),
 	}
 
+	println("Received request: ", params.Page, params.SortBy, params.Order)
+
 	words, total, err := h.sqlRepository.FindAllWords(params)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

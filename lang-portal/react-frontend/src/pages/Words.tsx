@@ -18,34 +18,33 @@ import {
 } from "@/components/ui/pagination";
 import { Link } from "react-router-dom";
 import { Search } from "lucide-react";
-
-// Mock data - replace with API call later
-const mockWords = Array.from({ length: 50 }, (_, i) => ({
-  id: i + 1,
-  word: `Word ${i + 1}`,
-  meaning: `Meaning for word ${i + 1}`,
-  reading: `Reading ${i + 1}`,
-  lastReviewed: new Date(Date.now() - Math.random() * 10000000000).toLocaleDateString(),
-  nextReview: new Date(Date.now() + Math.random() * 10000000000).toLocaleDateString(),
-}));
+import { WordsService } from "@/services/words-service";
+import { useQuery } from "@tanstack/react-query";
 
 const Words = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const filteredWords = mockWords.filter(
-    (word) =>
-      word.word.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      word.meaning.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      word.reading.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const { data: paginatedResponse, isLoading, error } = useQuery({
+    queryKey: ["words", currentPage],
+    queryFn: () => WordsService.getWords(currentPage),
+  });
 
-  const totalPages = Math.ceil(filteredWords.length / itemsPerPage);
-  const currentWords = filteredWords.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const filteredWords = paginatedResponse?.data?.filter(
+    (word) =>
+      word.german.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      word.english.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
+
+  if (error) {
+    console.error('Error fetching words:', error);
+    return <div>Error loading words: {error.message}</div>;
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="animate-fade-up space-y-8">
@@ -70,28 +69,24 @@ const Words = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Word</TableHead>
-              <TableHead>Meaning</TableHead>
-              <TableHead>Reading</TableHead>
-              <TableHead>Last Reviewed</TableHead>
-              <TableHead>Next Review</TableHead>
+              <TableHead>German</TableHead>
+              <TableHead>English</TableHead>
+              <TableHead>Class</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentWords.map((word) => (
+            {filteredWords.map((word) => (
               <TableRow key={word.id}>
                 <TableCell>
                   <Link
                     to={`/words/${word.id}`}
                     className="text-blue-500 hover:underline"
                   >
-                    {word.word}
+                    {word.german}
                   </Link>
                 </TableCell>
-                <TableCell>{word.meaning}</TableCell>
-                <TableCell>{word.reading}</TableCell>
-                <TableCell>{word.lastReviewed}</TableCell>
-                <TableCell>{word.nextReview}</TableCell>
+                <TableCell>{word.english}</TableCell>
+                <TableCell>{word.class}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -106,7 +101,7 @@ const Words = () => {
               disabled={currentPage === 1}
             />
           </PaginationItem>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          {Array.from({ length: paginatedResponse?.pages || 0 }, (_, i) => i + 1).map((page) => (
             <PaginationItem key={page}>
               <PaginationLink
                 onClick={() => setCurrentPage(page)}
@@ -118,8 +113,8 @@ const Words = () => {
           ))}
           <PaginationItem>
             <PaginationNext
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => Math.min(paginatedResponse?.pages || 1, p + 1))}
+              disabled={currentPage === paginatedResponse?.pages}
             />
           </PaginationItem>
         </PaginationContent>
