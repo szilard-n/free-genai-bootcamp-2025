@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -24,8 +25,6 @@ func (h *Handler) GetWords(w http.ResponseWriter, r *http.Request) {
 		SortBy: r.URL.Query().Get("sort_by"),
 		Order:  r.URL.Query().Get("order"),
 	}
-
-	println("Received request: ", params.Page, params.SortBy, params.Order)
 
 	words, total, err := h.sqlRepository.FindAllWords(params)
 	if err != nil {
@@ -68,6 +67,7 @@ func (h *Handler) GetGroups(w http.ResponseWriter, r *http.Request) {
 
 	groups, total, err := h.sqlRepository.FindAllGroups(params)
 	if err != nil {
+		log.Printf("Error: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -157,6 +157,16 @@ func (h *Handler) LogReview(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(review)
+}
+
+func (h *Handler) GetStudyActivities(w http.ResponseWriter, r *http.Request) {
+	activities, err := h.sqlRepository.FindAllStudyActivities()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(activities)
 }
 
 func getIntQueryParam(r *http.Request, name string, defaultValue int) int {

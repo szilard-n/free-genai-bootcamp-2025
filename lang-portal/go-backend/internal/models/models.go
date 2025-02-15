@@ -14,9 +14,10 @@ type Word struct {
 
 // Group represents a collection of words
 type Group struct {
-	ID         int    `json:"id"`
-	Name       string `json:"name"`
-	WordsCount int    `json:"words_count"`
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	WordsCount  int    `json:"words_count"`
+	Description string `json:"description"`
 }
 
 // WordGroup represents the join table between words and groups

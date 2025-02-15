@@ -24,7 +24,6 @@ import { useQuery } from "@tanstack/react-query";
 const Words = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
 
   const { data: paginatedResponse, isLoading, error } = useQuery({
     queryKey: ["words", currentPage],

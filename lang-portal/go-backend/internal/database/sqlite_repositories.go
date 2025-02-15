@@ -82,7 +82,7 @@ func (r *SQLiteRepository) FindAllGroups(params dto.PaginationParams) ([]models.
 	offset := (params.Page - 1) * limit
 
 	query := `
-        SELECT id, name, words_count
+        SELECT id, name, words_count, description
         FROM groups
         LIMIT ? OFFSET ?`
 
@@ -95,7 +95,7 @@ func (r *SQLiteRepository) FindAllGroups(params dto.PaginationParams) ([]models.
 	var groups []models.Group
 	for rows.Next() {
 		var g models.Group
-		err := rows.Scan(&g.ID, &g.Name, &g.WordsCount)
+		err := rows.Scan(&g.ID, &g.Name, &g.WordsCount, &g.Description)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -213,4 +213,26 @@ func (r *SQLiteRepository) CreateReview(sessionID, wordID int, correct bool) (mo
 	)
 
 	return review, err
+}
+
+func (r *SQLiteRepository) FindAllStudyActivities() ([]models.StudyActivity, error) {
+	rows, err := r.db.Query(`
+		SELECT id, name, url
+		FROM study_activities`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var activities []models.StudyActivity
+	for rows.Next() {
+		var a models.StudyActivity
+		err := rows.Scan(&a.ID, &a.Name, &a.URL)
+		if err != nil {
+			return nil, err
+		}
+		activities = append(activities, a)
+	}
+
+	return activities, nil
 }

@@ -101,15 +101,16 @@ func (m *DBConnectionManager) Seed() error {
 	}
 
 	groups := []struct {
-		Name string
+		Name        string
+		Description string
 	}{
-		{"Basic Nouns"},
-		{"Household Items"},
-		{"Animals"},
+		{"Basic Nouns", "Basic nouns for beginners"},
+		{"Household Items", "Items found in a house"},
+		{"Animals", "Common animals"},
 	}
 
 	for _, group := range groups {
-		_, err := m.db.Exec("INSERT INTO groups (name) VALUES (?)", group.Name)
+		_, err := m.db.Exec("INSERT INTO groups (name, description) VALUES (?, ?)", group.Name, group.Description)
 		if err != nil {
 			return err
 		}
@@ -134,7 +135,23 @@ func (m *DBConnectionManager) Seed() error {
 		}
 	}
 
-	log.Println("Database seeded successfully with words, groups, and word_groups.")
+	studyActivities := []struct {
+		Name string
+		URL  string
+	}{
+		{"Flashcards", "https://picsum.photos/seed/picsum/600/300"},
+		{"Quizzes", "https://picsum.photos/seed/picsum/600/300"},
+		{"Listening Practice", "https://picsum.photos/seed/picsum/600/300"},
+	}
+
+	for _, activity := range studyActivities {
+		_, err := m.db.Exec("INSERT INTO study_activities (name, url) VALUES (?, ?)", activity.Name, activity.URL)
+		if err != nil {
+			return err
+		}
+	}
+
+	log.Println("Database seeded successfully with words, groups, word_groups, and study_activities.")
 	return nil
 }
 

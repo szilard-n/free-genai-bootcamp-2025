@@ -9,6 +9,7 @@ import (
 type StudyRepository interface {
 	CreateStudySession(groupID, studyActivityID int) (models.StudySession, error)
 	CreateReview(sessionID, wordID int, correct bool) (models.WordReviewItem, error)
+	FindAllStudyActivities() ([]models.StudyActivity, error)
 }
 
 // WordRepository defines word-related operations

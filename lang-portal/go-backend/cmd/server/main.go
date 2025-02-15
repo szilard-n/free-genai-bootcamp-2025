@@ -33,6 +33,7 @@ func main() {
 	r.HandleFunc("/words/{id}", handler.GetWordById).Methods("GET")
 	r.HandleFunc("/groups", handler.GetGroups).Methods("GET")
 	r.HandleFunc("/groups/{id}", handler.GetGroupWords).Methods("GET")
+	r.HandleFunc("/study_activities", handler.GetStudyActivities).Methods("GET")
 	r.HandleFunc("/study_sessions", handler.CreateStudySession).Methods("POST")
 	r.HandleFunc("/study_sessions/{id}/review", handler.LogReview).Methods("POST")
 
