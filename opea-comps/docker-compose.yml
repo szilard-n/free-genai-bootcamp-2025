@@ -1,0 +1,17 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ${CONTAINER_NAME}
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "${HOST_PORT}:11434"
+    environment:
+      - LLM_ENDPOINT_PORT=${LLM_ENDPOINT_PORT}
+      - LLM_MODEL_ID=${LLM_MODEL_ID}
+      - NO_PROXY=${NO_PROXY}
+
+volumes:
+  ollama_data:
+    name: ${VOLUME_NAME}
