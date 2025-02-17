@@ -31,8 +31,16 @@ func NewDBConnectionManager(dbPath string) (*DBConnectionManager, error) {
 	return &DBConnectionManager{db: db}, nil
 }
 
-func (m *DBConnectionManager) NewSQLiteRepository() *SQLiteRepository {
-	return &SQLiteRepository{db: m.db}
+func (m *DBConnectionManager) NewWordRepository() *SQLWordRepository {
+	return &SQLWordRepository{db: m.db}
+}
+
+func (m *DBConnectionManager) NewStudyRepository() *SQLStudyActivityRepository {
+	return &SQLStudyActivityRepository{db: m.db}
+}
+
+func (m *DBConnectionManager) NewGroupRepository() *SQLGroupRepository {
+	return &SQLGroupRepository{db: m.db}
 }
 
 func (m *DBConnectionManager) RunMigrations() error {

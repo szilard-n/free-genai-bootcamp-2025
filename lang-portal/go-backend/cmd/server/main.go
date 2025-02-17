@@ -25,17 +25,22 @@ func main() {
 		log.Fatal(err)
 	}
 
-	sqlRepo := dbManager.NewSQLiteRepository()
-	handler := handlers.NewHandler(sqlRepo)
+	wordHandler := handlers.NewWordHandler(dbManager.NewWordRepository())
+	groupHandler := handlers.NewGroupHandler(dbManager.NewGroupRepository())
+	studyHandler := handlers.NewStudyActivityHandler(dbManager.NewStudyRepository())
 
 	r := mux.NewRouter()
-	r.HandleFunc("/words", handler.GetWords).Methods("GET")
-	r.HandleFunc("/words/{id}", handler.GetWordById).Methods("GET")
-	r.HandleFunc("/groups", handler.GetGroups).Methods("GET")
-	r.HandleFunc("/groups/{id}", handler.GetGroupWords).Methods("GET")
-	r.HandleFunc("/study_activities", handler.GetStudyActivities).Methods("GET")
-	r.HandleFunc("/study_sessions", handler.CreateStudySession).Methods("POST")
-	r.HandleFunc("/study_sessions/{id}/review", handler.LogReview).Methods("POST")
+	r.HandleFunc("/words", wordHandler.GetWords).Methods("GET")
+	r.HandleFunc("/words/{id}", wordHandler.GetWordById).Methods("GET")
+
+	r.HandleFunc("/groups", groupHandler.GetGroups).Methods("GET")
+	r.HandleFunc("/groups/{id}", groupHandler.GetGroup).Methods("GET")
+	r.HandleFunc("/groups/{id}/words", groupHandler.GetGroupWords).Methods("GET")
+	r.HandleFunc("/groups/{id}/study_sessions", groupHandler.GetGroupStudySessions).Methods("GET")
+
+	r.HandleFunc("/study_activities", studyHandler.GetStudyActivities).Methods("GET")
+	r.HandleFunc("/study_activities/{id}", studyHandler.GetStudyActivity).Methods("GET")
+	r.HandleFunc("/study_activities/{id}/sessions", studyHandler.GetStudyActivitySessions).Methods("GET")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:8080"},
