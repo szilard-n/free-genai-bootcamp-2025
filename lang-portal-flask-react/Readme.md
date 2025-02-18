@@ -5,7 +5,7 @@
 Start up the applications like so:
 
 ```
-# Start both services
+# Start all services
 make start
 
 # Start only backend
