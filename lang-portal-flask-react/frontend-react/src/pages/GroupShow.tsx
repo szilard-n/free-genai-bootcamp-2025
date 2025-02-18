@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { 
   fetchGroupDetails, 
@@ -20,9 +20,9 @@ export default function GroupShow() {
   const { setCurrentGroup } = useNavigation()
   const [words, setWords] = useState<Word[]>([])
   const [studySessions, setStudySessions] = useState<StudySession[]>([])
-  const [wordSortKey, setWordSortKey] = useState<WordSortKey>('kanji')
+  const [wordSortKey, setWordSortKey] = useState<WordSortKey>('german')
   const [wordSortDirection, setWordSortDirection] = useState<'asc' | 'desc'>('asc')
-  const [sessionSortKey, setSessionSortKey] = useState<StudySessionSortKey>('startTime')
+  const [sessionSortKey, setSessionSortKey] = useState<StudySessionSortKey>('start_time')
   const [sessionSortDirection, setSessionSortDirection] = useState<'asc' | 'desc'>('desc')
   const [wordsPage, setWordsPage] = useState(1)
   const [sessionsPage, setSessionsPage] = useState(1)

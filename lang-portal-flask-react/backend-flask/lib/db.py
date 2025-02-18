@@ -84,8 +84,8 @@ class Db:
       for word in words:
         # Insert the word into the words table
         cursor.execute('''
-          INSERT INTO words (kanji, romaji, english, parts) VALUES (?, ?, ?, ?)
-        ''', (word['kanji'], word['romaji'], word['english'], json.dumps(word['parts'])))
+          INSERT INTO words (english, german) VALUES (?, ?)
+        ''', (word['english'], word['german']))
         
         # Get the last inserted word's ID
         word_id = cursor.lastrowid
@@ -117,12 +117,12 @@ class Db:
       self.import_word_json(
         cursor=cursor,
         group_name='Core Verbs',
-        data_json_path='seed/data_verbs.json'
+        data_json_path='seed/data_verbs_de.json'
       )
       self.import_word_json(
         cursor=cursor,
         group_name='Core Adjectives',
-        data_json_path='seed/data_adjectives.json'
+        data_json_path='seed/data_adjectives_de.json'
       )
 
       self.import_study_activities_json(

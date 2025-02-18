@@ -1,6 +1,8 @@
+import math
+
 from flask import jsonify, request
 from flask_cors import cross_origin
-import math
+
 
 def load(app):
     @app.route('/api/study-activities', methods=['GET'])
@@ -9,7 +11,7 @@ def load(app):
         cursor = app.db.cursor()
         cursor.execute('SELECT id, name, url, preview_url FROM study_activities')
         activities = cursor.fetchall()
-        
+
         return jsonify([{
             'id': activity['id'],
             'title': activity['name'],
@@ -23,10 +25,10 @@ def load(app):
         cursor = app.db.cursor()
         cursor.execute('SELECT id, name, url, preview_url FROM study_activities WHERE id = ?', (id,))
         activity = cursor.fetchone()
-        
+
         if not activity:
             return jsonify({'error': 'Activity not found'}), 404
-            
+
         return jsonify({
             'id': activity['id'],
             'title': activity['name'],
@@ -38,7 +40,7 @@ def load(app):
     @cross_origin()
     def get_study_activity_sessions(id):
         cursor = app.db.cursor()
-        
+
         # Verify activity exists
         cursor.execute('SELECT id FROM study_activities WHERE id = ?', (id,))
         if not cursor.fetchone():
@@ -100,18 +102,18 @@ def load(app):
     @cross_origin()
     def get_study_activity_launch_data(id):
         cursor = app.db.cursor()
-        
+
         # Get activity details
         cursor.execute('SELECT id, name, url, preview_url FROM study_activities WHERE id = ?', (id,))
         activity = cursor.fetchone()
-        
+
         if not activity:
             return jsonify({'error': 'Activity not found'}), 404
-        
+
         # Get available groups
         cursor.execute('SELECT id, name FROM groups')
         groups = cursor.fetchall()
-        
+
         return jsonify({
             'activity': {
                 'id': activity['id'],

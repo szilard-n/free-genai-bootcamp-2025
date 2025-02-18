@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useNavigation } from '@/context/NavigationContext'
 import StudySessionsTable from '@/components/StudySessionsTable'
 import Pagination from '@/components/Pagination'
+
+import { StudySessionSortKey } from '@/services/api'
 
 type Session = {
   id: number
@@ -41,6 +43,8 @@ export default function StudyActivityShow() {
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [sortKey, setSortKey] = useState<StudySessionSortKey>('start_time')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,7 +53,7 @@ export default function StudyActivityShow() {
       setLoading(true)
       setError(null)
       try {
-        const response = await fetch(`http://localhost:8000/api/study-activities/${id}`)
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/study-activities/${id}`)
         if (!response.ok) {
           throw new Error('Failed to fetch study activity')
         }
@@ -59,7 +63,7 @@ export default function StudyActivityShow() {
         
         // Fetch sessions for the current page
         const sessionsResponse = await fetch(
-          `http://localhost:8000/api/study-activities/${id}/sessions?page=${currentPage}&per_page=${ITEMS_PER_PAGE}`
+          `${import.meta.env.VITE_API_URL}/study-activities/${id}/sessions?page=${currentPage}&per_page=${ITEMS_PER_PAGE}`
         )
         if (!sessionsResponse.ok) {
           throw new Error('Failed to fetch sessions')
@@ -97,6 +101,15 @@ export default function StudyActivityShow() {
       setCurrentStudyActivity(null)
     }
   }, [setCurrentStudyActivity])
+
+  const handleSort = (key: StudySessionSortKey) => {
+    if (key === sortKey) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortKey(key)
+      setSortDirection('asc')
+    }
+  }
 
   if (loading) {
     return <div className="text-center py-4">Loading...</div>
@@ -144,7 +157,12 @@ export default function StudyActivityShow() {
       {sessionData && sessionData.items.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold mb-4">Study Sessions</h2>
-          <StudySessionsTable sessions={sessionData.items} />
+          <StudySessionsTable 
+            sessions={sessionData.items}
+            sortKey={sortKey}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+          />
           {sessionData.total_pages > 1 && (
             <div className="mt-4">
               <Pagination

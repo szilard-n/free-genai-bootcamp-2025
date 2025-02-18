@@ -1,6 +1,6 @@
 from flask import jsonify
 from flask_cors import cross_origin
-from datetime import datetime, timedelta
+
 
 def load(app):
     @app.route('/dashboard/recent-session', methods=['GET'])
@@ -8,7 +8,7 @@ def load(app):
     def get_recent_session():
         try:
             cursor = app.db.cursor()
-            
+
             # Get the most recent study session with activity name and results
             cursor.execute('''
                 SELECT 
@@ -25,12 +25,12 @@ def load(app):
                 ORDER BY ss.created_at DESC
                 LIMIT 1
             ''')
-            
+
             session = cursor.fetchone()
-            
+
             if not session:
                 return jsonify(None)
-            
+
             return jsonify({
                 "id": session["id"],
                 "group_id": session["group_id"],
@@ -39,7 +39,7 @@ def load(app):
                 "correct_count": session["correct_count"],
                 "wrong_count": session["wrong_count"]
             })
-            
+
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
@@ -48,7 +48,7 @@ def load(app):
     def get_study_stats():
         try:
             cursor = app.db.cursor()
-            
+
             # Get total vocabulary count
             cursor.execute('SELECT COUNT(*) as total_vocabulary FROM words')
             total_vocabulary = cursor.fetchone()["total_vocabulary"]
@@ -60,7 +60,7 @@ def load(app):
                 JOIN study_sessions ss ON wri.study_session_id = ss.id
             ''')
             total_words = cursor.fetchone()["total_words"]
-            
+
             # Get mastered words (words with >80% success rate and at least 5 attempts)
             cursor.execute('''
                 WITH word_stats AS (
@@ -78,7 +78,7 @@ def load(app):
                 WHERE success_rate >= 0.8
             ''')
             mastered_words = cursor.fetchone()["mastered_words"]
-            
+
             # Get overall success rate
             cursor.execute('''
                 SELECT 
@@ -87,11 +87,11 @@ def load(app):
                 JOIN study_sessions ss ON wri.study_session_id = ss.id
             ''')
             success_rate = cursor.fetchone()["success_rate"] or 0
-            
+
             # Get total number of study sessions
             cursor.execute('SELECT COUNT(*) as total_sessions FROM study_sessions')
             total_sessions = cursor.fetchone()["total_sessions"]
-            
+
             # Get number of groups with activity in the last 30 days
             cursor.execute('''
                 SELECT COUNT(DISTINCT group_id) as active_groups
@@ -99,7 +99,7 @@ def load(app):
                 WHERE created_at >= date('now', '-30 days')
             ''')
             active_groups = cursor.fetchone()["active_groups"]
-            
+
             # Calculate current streak (consecutive days with at least one study session)
             cursor.execute('''
                 WITH daily_sessions AS (
@@ -124,7 +124,7 @@ def load(app):
                 )
             ''')
             current_streak = cursor.fetchone()["streak"]
-            
+
             return jsonify({
                 "total_vocabulary": total_vocabulary,
                 "total_words_studied": total_words,
@@ -134,6 +134,6 @@ def load(app):
                 "active_groups": active_groups,
                 "current_streak": current_streak
             })
-            
+
         except Exception as e:
             return jsonify({"error": str(e)}), 500

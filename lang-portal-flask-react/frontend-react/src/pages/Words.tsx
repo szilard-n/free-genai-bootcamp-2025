@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { fetchWords, type Word } from '../services/api'
 import WordsTable, { WordSortKey } from '../components/WordsTable'
 
 export default function Words() {
   const [words, setWords] = useState<Word[]>([])
-  const [sortKey, setSortKey] = useState<WordSortKey>('kanji')
+  const [sortKey, setSortKey] = useState<WordSortKey>('english')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)

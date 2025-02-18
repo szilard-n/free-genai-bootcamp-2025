@@ -1,17 +1,19 @@
-## Install
+# Lang Portal Homework Week 1
 
-```sh
-pip install -r requirements.txt
-```
+## Dockerized lang portal
 
-## Setup DB
+Start up the applications like so:
 
 ```
-invoke init-db
-```
+# Start both services
+make start
 
-## Run
+# Start only backend
+make start backend
 
-```sh
-python app.py
+# Start only frontend
+make start frontend
+
+# Stop all services
+make stop
 ```
