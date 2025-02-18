@@ -14,6 +14,9 @@ make start backend
 # Start only frontend
 make start frontend
 
+# Start Importer
+make start importer
+
 # Stop all services
 make stop
 ```
