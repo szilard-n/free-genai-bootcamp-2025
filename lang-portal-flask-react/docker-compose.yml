@@ -21,6 +21,13 @@ services:
     networks:
       - lang-portal-network
 
+  importer:
+    build:
+      context: ./lang-importer
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+
 networks:
   lang-portal-network:
     driver: bridge

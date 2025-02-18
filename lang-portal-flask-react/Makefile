@@ -7,6 +7,8 @@ start:
 			docker compose up --build api;; \
 		frontend) \
 			docker compose up --build frontend;; \
+		importer) \
+			docker compose up --build importer;; \
 		*) \
 			docker compose up --build;; \
 	esac
