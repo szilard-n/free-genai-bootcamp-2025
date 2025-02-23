@@ -1,0 +1,288 @@
+{
+    "parts": [
+        {
+            "part": 1,
+            "introduction": "Teil 1: Was ist richtig? Kreuzen Sie an A, B oder C. Sie hören jeden Text zweimal.",
+            "questions": [
+                {
+                    "question_number": 1,
+                    "text": "- Weißt du, wo es hier Kleidung für Kinder gibt? - Oh, das weiß ich auch nicht, aber sehen wir einmal auf die Information. Kinderspielzeug gibt es im vierten Stock, Damenkleidung im ersten, hier im zweiten Stock findest du Kinderkleidung.",
+                    "exam_question": "Wo findet man Kleidung für Kinder?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Im ersten Stock",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "Im zweiten Stock",
+                            "correct": true
+                        },
+                        {
+                            "option": "C",
+                            "text": "Im vierten Stock",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 2,
+                    "text": "- Hier, bitte, die Speisekarte. Ich kann heute den Fisch empfehlen. - Nein, danke, ich mag keinen Fisch. - Dann vielleicht Hähnchen mit Pommes Frites oder unseren Chef-Salat mit Ei und Schinken? - Salat ist eine gute Idee, den bringen Sie mir bitte.",
+                    "exam_question": "Was bestellt der Gast?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Fisch",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "Hähnchen mit Pommes Frites",
+                            "correct": false
+                        },
+                        {
+                            "option": "C",
+                            "text": "Chef-Salat mit Ei und Schinken",
+                            "correct": true
+                        }
+                    ]
+                },
+                {
+                    "question_number": 3,
+                    "text": "- Bitte, eine Eintrittskarte für Studenten. - Gern, aber das Museum schließt in einer halben Stunde. - Ach, so früh schon? - Ja, am Mittwochnachmittag schließen wir schon um 15 Uhr, aber an den anderen Tagen ist bis 18 Uhr geöffnet, und am Donnerstag schließen wir erst um 22 Uhr.",
+                    "exam_question": "Wann schließt das Museum am Mittwoch?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Um 18 Uhr",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "Um 15 Uhr",
+                            "correct": true
+                        },
+                        {
+                            "option": "C",
+                            "text": "Um 22 Uhr",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 4,
+                    "text": "- Mein Arzt sagt, ich soll mehr Sport machen. - Richtig, komm in meinen Verein, da kannst du Fußball spielen, und am Wochenende laufe ich immer eine Stunde. - Nein, für mich ist Radfahren das beste, sagt mein Arzt, laufen ist nichts für mich.",
+                    "exam_question": "Was empfiehlt der Arzt?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Fußball spielen",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "Radfahren",
+                            "correct": true
+                        },
+                        {
+                            "option": "C",
+                            "text": "Laufen",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 5,
+                    "text": "- Guten Tag, Frau Bauer, machen Sie dieses Jahr wieder Urlaub am Meer oder bleiben Sie zu Hause? - Nein, wir waren in den letzten Jahren immer am Meer, dieses Jahr besuchen wir unsere Verwandten in Süddeutschland, die freuen sich schon sehr.",
+                    "exam_question": "Wohin fahren Frau Bauer und ihre Familie dieses Jahr?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "An die See",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "In die Berge",
+                            "correct": false
+                        },
+                        {
+                            "option": "C",
+                            "text": "Nach Süddeutschland",
+                            "correct": true
+                        }
+                    ]
+                },
+                {
+                    "question_number": 6,
+                    "text": "- Du, Bruno, wie lange fliegst du von hier nach München? - Nicht lange, nur 50 Minuten. - Aber ich muss eine halbe Stunde vor dem Abflug im Flughafen sein, und bis zum Flughafen brauche ich auch noch 45 Minuten, dann geht es doch nicht so schnell.",
+                    "exam_question": "Wie lange dauert der Flug von hier nach München?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "1 Stunde und 35 Minuten",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "50 Minuten",
+                            "correct": true
+                        },
+                        {
+                            "option": "C",
+                            "text": "1 Stunde und 20 Minuten",
+                            "correct": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "part": 2,
+            "introduction": "Teil 2: Kreuzen Sie an richtig oder falsch. Sie hören jeden Text einmal.",
+            "questions": [
+                {
+                    "question_number": 7,
+                    "text": "Liebe Fahrgäste, herzlich willkommen an Bord des ICE 987 nach Frankfurt. Eine wichtige Information: Am nächsten Bahnhof müssen wir kurz anhalten, es gibt Probleme mit dem Bordcomputer. Bitte steigen Sie nicht aus, wir fahren gleich weiter.",
+                    "exam_statement": "Der Zug fährt direkt ohne anzuhalten.",
+                    "is_true": false
+                },
+                {
+                    "question_number": 8,
+                    "text": "Achtung, eine Durchsage für die Gäste des Flugs LH487 nach Rom. Bitte kommen Sie zu Ausgang B18 im ersten Stock. Der Ausgang A7 im zweiten Stock ist zur Zeit besetzt.",
+                    "exam_statement": "Der Ausgang A7 im zweiten Stock ist frei.",
+                    "is_true": false
+                },
+                {
+                    "question_number": 9,
+                    "text": "Liebe Urlauber, wir machen jetzt eine Pause von einer Stunde. Sie können einen Kaffee trinken oder das kleine Museum direkt am Meer besuchen. Aber bitte, um 14 Uhr fahren wir weiter. Bitte kommen Sie pünktlich zum Bus, wir möchten nicht warten.",
+                    "exam_statement": "Die Pause dauert zwei Stunden.",
+                    "is_true": false
+                },
+                {
+                    "question_number": 10,
+                    "text": "Liebe Kunden, das waren unsere Sonderangebote für heute, und nun noch eine dringende Ansage: Der kleine Mario sucht seinen Vater. Kommen Sie bitte schnell zum Informationsschalter im ersten Stock, Mario wartet dort auf Sie.",
+                    "exam_statement": "Mario sucht seine Mutter.",
+                    "is_true": false
+                }
+            ]
+        },
+        {
+            "part": 3,
+            "introduction": "Teil 3: Was ist richtig? Kreuzen Sie an A, B oder C. Sie hören jeden Text zweimal.",
+            "questions": [
+                {
+                    "question_number": 11,
+                    "text": "Autohaus Meyer, guten Tag, Frau Krause, wir haben noch eine Frage zu der Reparatur von ihrem Wagen. Bitte rufen Sie uns nach 13 Uhr wieder zurück, heute sind wir bis 19 Uhr hier. Nein, Entschuldigung, heute ist ja schon Freitag, dann heute nur bis 18 Uhr, danke.",
+                    "exam_question": "Bis wann ist das Autohaus an einem Freitag geöffnet?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Bis 19 Uhr",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "Bis 18 Uhr",
+                            "correct": true
+                        },
+                        {
+                            "option": "C",
+                            "text": "Bis 17 Uhr",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 12,
+                    "text": "Hallo Irene, hier Nina, ich möchte heute Abend nicht zu Hause bleiben. In Metropolis gibt es einen guten Film. Kommst du mit, oder musst du lernen? Ruf mich bitte auf dem Handy an.",
+                    "exam_question": "Was möchte Nina heute Abend machen?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Zu Hause bleiben",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "Einen Film in Metropolis sehen",
+                            "correct": true
+                        },
+                        {
+                            "option": "C",
+                            "text": "Lernen",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 13,
+                    "text": "Sarah, ich bin's, Christoph, du bist mein Wörterbuch. Vielleicht bei dir auf dem kleinen Schrank mit den CDs. Bitte bring es gleich in den Kurs mit, und ich gebe dir heute natürlich dein Buch zurück, bis dann.",
+                    "exam_question": "Was bittet Christoph Sarah zu bringen?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Ein Buch",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "Sein Wörterbuch",
+                            "correct": true
+                        },
+                        {
+                            "option": "C",
+                            "text": "Seine CDs",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 14,
+                    "text": "Hallo Sabine, Maria hier, war total schön im Café gestern, danke noch mal. Ich gehe gleich mit Julia ins Konzert, und danach, so um 11 Uhr, in die Disco Aladdin, wir treffen dich dort, okay?",
+                    "exam_question": "Wohin geht Maria nach dem Konzert?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Nach Hause",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "In die Disco Aladdin",
+                            "correct": true
+                        },
+                        {
+                            "option": "C",
+                            "text": "In ein Café",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 15,
+                    "text": "Guten Tag, Frau Solms-Heinze, hier, morgen habe ich bis 12 Uhr einen Termin, aber nach der Mittagspause habe ich Zeit. Wollen wir uns um 13 Uhr treffen? Rufen Sie mich bitte bis 18 Uhr zurück.",
+                    "exam_question": "Um wie viel Uhr soll das Treffen stattfinden?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Um 12 Uhr",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "Um 13 Uhr",
+                            "correct": true
+                        },
+                        {
+                            "option": "C",
+                            "text": "Um 18 Uhr",
+                            "correct": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

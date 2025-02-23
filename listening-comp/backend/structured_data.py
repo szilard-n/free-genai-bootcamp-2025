@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from typing import List, Optional
-from llm_client import groq_client
 import os
 from dotenv import load_dotenv
 import json
+
+from backend.llm_client import groq_client
 
 load_dotenv()
 
@@ -217,7 +218,6 @@ class TranscriptStructurer:
                     {"role": "user", "content": self.load_prompt(transcript)}
                 ],
                 temperature=0.1,
-                max_tokens=2000
             )
 
             response_text = completion.choices[0].message.content
@@ -263,7 +263,9 @@ class TranscriptStructurer:
                 )
                 exam_parts.append(exam_part)
 
-            return Exam(parts=exam_parts)
+            exam = Exam(parts=exam_parts)
+            self.save_exam_data(exam)
+            return exam
 
         except json.JSONDecodeError as e:
             print(f"Error parsing JSON response: {str(e)}")
@@ -273,7 +275,7 @@ class TranscriptStructurer:
             print(f"Unexpected error: {str(e)}")
             return Exam(parts=[])
 
-    def save_exam_data(self, exam: Exam, path: str = "./data/questions/exam_data.json"):
+    def save_exam_data(self, exam: Exam, path: str = "backend/data/questions/structured_data.json"):
         with open(path, "w", encoding="utf-8") as f:
             json.dump(exam.to_dict(), f, indent=4, ensure_ascii=False)
 

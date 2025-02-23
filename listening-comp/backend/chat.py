@@ -1,7 +1,8 @@
 import os
 from typing import Optional
 import streamlit as st
-from llm_client import groq_client
+
+from backend.llm_client import groq_client
 
 class GroqChat:
     """Simple chat interface using Groq LLM"""
@@ -28,7 +29,7 @@ class GroqChat:
             )
             return chat_completion.choices[0].message.content
         except Exception as e:
-            print(f"Error generating response: {str(e)}")
+            st.error(f"Error generating response: {str(e)}")
             return None
 
 

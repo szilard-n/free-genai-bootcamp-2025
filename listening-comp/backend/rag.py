@@ -4,7 +4,8 @@ from pathlib import Path
 from typing import List, Tuple, Dict, Any
 import os
 from dotenv import load_dotenv
-from llm_client import groq_client
+
+from backend.llm_client import groq_client
 
 load_dotenv()
 
