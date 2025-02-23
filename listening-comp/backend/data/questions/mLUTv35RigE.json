@@ -1,0 +1,288 @@
+{
+    "parts": [
+        {
+            "part": 1,
+            "introduction": "Teil 1: Was ist richtig? Kreuzen Sie an A, B oder C. Sie hören jeden Text zweimal.",
+            "questions": [
+                {
+                    "question_number": 1,
+                    "text": "- Entschuldigung, was kostet dieser Pullover jetzt? Da steht 30% billiger. - Einen Moment bitte. 19,95. - Euro? - Ja, Euro. Natürlich. - Okay, den nehme ich.",
+                    "exam_question": "Wie viel kostet der Pullover?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "19,95 Euro",
+                            "correct": true
+                        },
+                        {
+                            "option": "B",
+                            "text": "29,95 Euro",
+                            "correct": false
+                        },
+                        {
+                            "option": "C",
+                            "text": "39,95 Euro",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 2,
+                    "text": "- Ach, entschuldigen Sie bitte. - Ja, bitte. - Haben Sie eine Uhr? - Wie spät ist es bitte? - Ja, jetzt ist es gleich 5 Uhr. - Was, schon fünf? - Vielen Dank. - Wiedersehen.",
+                    "exam_question": "Wie spät ist es?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "5 Uhr",
+                            "correct": true
+                        },
+                        {
+                            "option": "B",
+                            "text": "3 Uhr",
+                            "correct": false
+                        },
+                        {
+                            "option": "C",
+                            "text": "7 Uhr",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 3,
+                    "text": "- Was wünschen Sie bitte? - Ich hätte gern die Salatplatte. - Und ein... - Entschuldigung, die Salatplatte ist leider aus. - Aber die Bratwurst kann ich Ihnen empfehlen, ganz frisch. - Heute... - Nein, danke. - Ich esse kein Fleisch. - Gibt es etwas ohne Fleisch? - Ja, nicht mehr viel. - Fisch oder Pommes.",
+                    "exam_question": "Warum kann der Kunde die Salatplatte nicht bekommen?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Sie ist ausverkauft",
+                            "correct": true
+                        },
+                        {
+                            "option": "B",
+                            "text": "Sie ist zu teuer",
+                            "correct": false
+                        },
+                        {
+                            "option": "C",
+                            "text": "Sie ist nicht mehr im Menü",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 4,
+                    "text": "- Haben Sie Kinder? - Ja, einen Sohn. - Und wie alt ist der? - 9 Jahre. - Seit gestern? - Zur Schule? - Ja, klar. - Schon in die dritte Klasse.",
+                    "exam_question": "Wie alt ist der Sohn?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "9 Jahre",
+                            "correct": true
+                        },
+                        {
+                            "option": "B",
+                            "text": "10 Jahre",
+                            "correct": false
+                        },
+                        {
+                            "option": "C",
+                            "text": "8 Jahre",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 5,
+                    "text": "- Ach, entschuldigen Sie, wie komme ich denn hier in den zweiten Stock? - Die Rolltreppe da vorne ist kaputt. - Da gehen Sie hier rechts um die Ecke und nehmen den Aufzug. - Um die Ecke, rechts. - Danke.",
+                    "exam_question": "Warum kann man die Rolltreppe nicht benutzen?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Sie ist kaputt",
+                            "correct": true
+                        },
+                        {
+                            "option": "B",
+                            "text": "Sie ist zu steil",
+                            "correct": false
+                        },
+                        {
+                            "option": "C",
+                            "text": "Sie ist zu lang",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 6,
+                    "text": "- Guten Morgen, Herr Albers. - So früh schon bei der Arbeit? - Ja, ich habe noch viel zu tun. - Morgen fahre ich doch für drei Wochen weg. - Ach, ja. - Das habe ich vergessen. - Wohin fahren Sie denn? - Zu meinen Verwandten nach Polen. - Na, dann schöne Zeit.",
+                    "exam_question": "Wohin fährt Herr Albers?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Nach Polen",
+                            "correct": true
+                        },
+                        {
+                            "option": "B",
+                            "text": "Nach Deutschland",
+                            "correct": false
+                        },
+                        {
+                            "option": "C",
+                            "text": "Nach Frankreich",
+                            "correct": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "part": 2,
+            "introduction": "Teil 2: Kreuzen Sie an richtig oder falsch. Sie hören jeden Text einmal.",
+            "questions": [
+                {
+                    "question_number": 7,
+                    "text": "Erstklassiger italienischer Weißwein für 12,78 € die Flasche oder exklusiver argentinischer Rotwein für 9,68 €. Besuchen Sie uns im dritten Stock. Frohe Weihnachten.",
+                    "exam_statement": "Der italienische Weißwein kostet 9,68 €.",
+                    "is_true": false
+                },
+                {
+                    "question_number": 8,
+                    "text": "Liebe Frage, ist die, wir sind kurz vor Würzburg. Sicherlich haben Sie schon Hunger. An der nächsten Raststätte halten wir für eine Stunde. Wir treffen uns wieder um halb eins am Bus, aber bitte pünktlich sein.",
+                    "exam_statement": "Der Bus hält für zwei Stunden an.",
+                    "is_true": false
+                },
+                {
+                    "question_number": 9,
+                    "text": "Liebe Fahrgäste, bitte beachten Sie, das ist ein außerplanmäßiger Halt. Bitte hier nicht aussteigen. In ein paar Minuten erreichen wir den Bahnhof von Bad Godesberg.",
+                    "exam_statement": "Der Halt ist planmäßig.",
+                    "is_true": false
+                },
+                {
+                    "question_number": 10,
+                    "text": "Herr Stefan Jander, gebucht auf dem Flug LH 737 nach Warschau, wird zum Schalter F7 gebeten. Der Flug wird in ein paar Minuten geschlossen.",
+                    "exam_statement": "Herr Jander fliegt nach Berlin.",
+                    "is_true": false
+                }
+            ]
+        },
+        {
+            "part": 3,
+            "introduction": "Teil 3: Was ist richtig? Kreuzen Sie an A, B oder C. Sie hören jeden Text zweimal.",
+            "questions": [
+                {
+                    "question_number": 11,
+                    "text": "Telefonansagedienste der Deutschen Telekom. Die Rufnummer des Teilnehmers hat sich geändert. Bitte rufen Sie die Telefonauskunft an unter 11.833.",
+                    "exam_question": "Was muss der Anrufer tun?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Die Rufnummer ändern",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "Die Telefonauskunft anrufen",
+                            "correct": true
+                        },
+                        {
+                            "option": "C",
+                            "text": "Den Anruf beenden",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 12,
+                    "text": "Hallo Jan, hier ist Boris. Du holst mich doch vom Bahnhof ab. Ich bin noch im Zug. Ich warte an der Information auf dich.",
+                    "exam_question": "Wo wartet Boris auf Jan?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Am Ausgang",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "An der Information",
+                            "correct": true
+                        },
+                        {
+                            "option": "C",
+                            "text": "Am Parkplatz",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 13,
+                    "text": "Mensch, Jan, du Penner! Hier noch mal Boris. Ich bin jetzt am Bahnhof und du, wo bist du denn? Ich warte schon über 20 Minuten auf dich. Also 10 Minuten Zeit hast du noch, bis zwei, dann nehme ich einen Taxi.",
+                    "exam_question": "Wie lange wartet Boris bereits auf Jan?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "10 Minuten",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "20 Minuten",
+                            "correct": true
+                        },
+                        {
+                            "option": "C",
+                            "text": "30 Minuten",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 14,
+                    "text": "Guten Tag, hierogala. Wir können am Samstag leider nicht zu Ihnen kommen. Am Sonntag haben wir aber Zeit. Rufen Sie uns doch bitte zurück, ob Ihnen das passt. Danke.",
+                    "exam_question": "An welchem Tag können sie nicht kommen?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Sonntag",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "Samstag",
+                            "correct": true
+                        },
+                        {
+                            "option": "C",
+                            "text": "Montag",
+                            "correct": false
+                        }
+                    ]
+                },
+                {
+                    "question_number": 15,
+                    "text": "Hallo Alex, Walter Hier. Kannst du schnell mal rüberkommen. Mein Computer hat einen Fehler. Ich kann nichts drucken. Melde dich doch bitte gleich, wenn du nach Hause kommst.",
+                    "exam_question": "Was ist mit dem Computer von Alex?",
+                    "answers": [
+                        {
+                            "option": "A",
+                            "text": "Er funktioniert einwandfrei",
+                            "correct": false
+                        },
+                        {
+                            "option": "B",
+                            "text": "Er hat einen Fehler",
+                            "correct": true
+                        },
+                        {
+                            "option": "C",
+                            "text": "Er ist ausgeschaltet",
+                            "correct": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

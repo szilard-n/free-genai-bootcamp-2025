@@ -1,0 +1,7 @@
+chromadb
+streamlit
+youtube-transcript-api
+groq
+python-dotenv
+dataclasses-json
+sentence-transformers
