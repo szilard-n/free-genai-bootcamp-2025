@@ -52,51 +52,49 @@
 - Ensures consistent settings and efficient resource usage
 
 ### 4. RAG System (`rag.py`)
-The RAG (Retrieval-Augmented Generation) system combines vector search with LLM-based question generation:
+The RAG (Retrieval-Augmented Generation) system provides semantic search over German learning content:
 
 #### Vector Store Implementation
-- Uses ChromaDB for efficient similarity search
-- Embeds questions using `paraphrase-multilingual-mpnet-base-v2` model
-  - Chosen specifically for better German language understanding
-  - Creates embeddings from both question text and context
-- Stores all questions in a single collection for broader semantic matches
-- Each question includes metadata:
-  - Part number (1, 2, or 3)
-  - Question number
-  - Video ID
-  - Whether it's an original or derivative question
+- Uses ChromaDB with persistent storage in `backend/data/vector_store`
+- Embeds content using `paraphrase-multilingual-mpnet-base-v2` model
+  - Optimized for multilingual understanding, especially German
+  - Creates embeddings from dialogues, statements, and questions
+- Stores content with type-based classification:
+  - `dialogue_or_statement`: Actual conversations and announcements
+  - `exam_question`: Questions about the content
+  - `exam_statement`: True/false statements
+  - `instruction`: Setup and contextual information
 
-#### Question Generation
-- Uses Groq LLM to generate variations while maintaining A1 difficulty
-- Part-specific formatting:
-  - Part 1: Two-person conversations with multiple choice (A, B, C)
-  - Part 2: Monologue statements with true/false answers
-  - Part 3: Monologue questions with multiple choice (A, B, C)
-- Strict validation ensures:
-  - Correct JSON structure
-  - Required fields per part type
-  - Proper conversation markers for Part 1
-  - Valid answer options for Parts 1 and 3
+#### Content Organization
+- Each document is stored with metadata:
+  - `content_type`: Identifies the type of content
+  - `type`: More specific categorization (content, question, statement)
+  - `part`: Which exam part it belongs to
+  - `question_number`: Reference to original question
 
 #### Search and Retrieval
-- Semantic search across all parts for broader coverage
-- Configurable similarity thresholds to ensure relevance
-- Can filter results:
-  - By part number if needed
-  - Include/exclude derivative questions
-  - Limit number of results
+- Prioritizes finding relevant dialogues and statements
+- Uses normalized distance-based scoring for better relevance:
+  - Scores normalized relative to the result set
+  - Higher scores indicate better matches
+- Configurable parameters:
+  - `max_results`: Maximum number of results to return
+  - `similarity_threshold`: Minimum relevance score
 - Returns full context including:
-  - Original conversation/monologue
-  - Question text
-  - Answer options
-  - Similarity scores
+  - Content text
+  - Metadata
+  - Relevance scores
 
-#### Example Flow
-1. User submits a query (e.g., "Wie viel kostet...")
-2. System embeds query using the multilingual model
-3. ChromaDB finds similar questions across all parts
-4. System can generate variations based on retrieved questions
-5. Each variation maintains the correct format for its part
+#### Vector Store Management
+- Automatic updates when source data changes
+- Clean recreation of collections to ensure consistency
+- Maintains last update timestamp to prevent unnecessary updates
+
+#### Example Usage
+1. User submits a query (e.g., "ordering food in German")
+2. System finds semantically similar dialogues
+3. Returns relevant conversations prioritizing actual dialogue content
+4. Scores indicate how well each result matches the query
 
 ### 5. Chat Interface (`chat.py`)
 - Simple chat interface using Groq LLM
@@ -122,30 +120,37 @@ backend/
 
 ## Key Features
 - Semantic search using multilingual embeddings for accurate question retrieval
-- Automatic generation of A1-level question variations maintaining original context
+- Automatic generation of question variations maintaining original context
 - Multi-part exam structure supporting different question types and formats
 - YouTube integration for transcript downloads
 - Vector-based storage with ChromaDB for efficient similarity search
 - Basic chat interface with Groq LLM
 
 ## How It Works
-1. YouTube transcripts are downloaded and stored
-2. Transcripts are processed into structured exam questions
-3. Questions are embedded and stored in ChromaDB
-4. RAG system generates variations and handles retrieval
-5. Chat interface provides basic interaction with Groq LLM
-6. Each component maintains A1 difficulty level and German language focus
 
-## How to Run the Frontend
+1. **Content Processing**
+   - YouTube transcripts are downloaded and processed
+   - Content is structured into dialogues, statements, and questions
+   - Each piece of content is tagged with appropriate metadata (type, part, etc.)
 
-```sh
-streamlit run frontend/main.py
-```
+2. **Vector Storage**
+   - Content is embedded using a multilingual model optimized for German
+   - Embeddings are stored in ChromaDB for efficient retrieval
+   - Metadata enables filtering by content type and other attributes
 
-The frontend is referecing the backend so no need to run backend separately.
+3. **Semantic Search**
+   - Users can search for specific topics or scenarios in German
+   - System finds semantically similar content using vector similarity
+   - Results are ranked by relevance using normalized distance scores
+   - Prioritizes actual dialogues and statements over exam questions
 
-## How to Run the Backend
+4. **Interactive Features** (Coming Soon)
+   - Question generation from dialogues
+   - Interactive practice sessions
+   - Real-time feedback on responses
+   - Progress tracking and difficulty adjustment
 
+## How to Run It
 1. Create virtual env
 ```sh
 python -m venv .venv
@@ -157,7 +162,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-3. Run the backend
+3. Run the frontend
 ```sh
-python backend/main.py
+streamlit run frontend/main.py
 ```

@@ -11,6 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from backend.chat import GroqChat
 from backend.get_transcript import YouTubeTranscriptDownloader
 from backend.structured_data import TranscriptStructurer
+from backend.rag import GermanLearningRAG
 
 
 # Page config
@@ -27,6 +28,12 @@ if 'messages' not in st.session_state:
     st.session_state.messages = []
 if 'chat' not in st.session_state:
     st.session_state.chat = None
+if 'rag' not in st.session_state:
+    try:
+        st.session_state.rag = GermanLearningRAG()
+    except Exception as e:
+        st.session_state.rag = None
+        st.error(f"Error initializing RAG system: {str(e)}")
 
 def render_header():
     """Render the header section"""
@@ -308,7 +315,7 @@ def render_structured_stage():
         
         if st.session_state.structured_data:
             # Create tabs for different views
-            tab1, tab2 = st.tabs(["Exam Parts", "Questions"])
+            tab1, tab2 = st.columns(2)
             
             with tab1:
                 # Display exam parts
@@ -365,23 +372,109 @@ def render_rag_stage():
     """Render the RAG implementation stage"""
     st.header("RAG System")
     
+    # Initialize RAG if not done or failed before
+    if 'rag' not in st.session_state or st.session_state.rag is None:
+        try:
+            st.session_state.rag = GermanLearningRAG()
+            st.success("RAG system initialized successfully!")
+        except Exception as e:
+            st.error(f"Error initializing RAG system: {str(e)}")
+            return
+    
+    # Update vector store button
+    if st.button("Update Vector Store"):
+        with st.spinner("Updating vector store..."):
+            try:
+                updated = st.session_state.rag.update_vector_store()
+                if updated:
+                    st.success("Vector store updated successfully!")
+                else:
+                    st.info("Vector store is already up to date.")
+            except Exception as e:
+                st.error(f"Error updating vector store: {str(e)}")
+    
     # Query input
     query = st.text_input(
-        "Test Query",
-        placeholder="Enter a question about German..."
+        "Search Query",
+        placeholder="Ask about German vocabulary, phrases, or search for specific topics in the dialogues..."
     )
     
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.subheader("Retrieved Context")
-        # Placeholder for retrieved contexts
-        st.info("Retrieved contexts will appear here")
+    # Only proceed if we have a query
+    if query:
+        col1, col2 = st.columns(2)
         
-    with col2:
-        st.subheader("Generated Response")
-        # Placeholder for LLM response
-        st.info("Generated response will appear here")
+        with col1:
+            st.subheader("Retrieved Context")
+            try:
+                # Get similar contexts
+                results = st.session_state.rag.query(query)
+                
+                if not results:
+                    st.info("No relevant contexts found for your query. Try rephrasing your question or using different keywords.")
+                else:
+                    # Display results
+                    for idx, result in enumerate(results, 1):
+                        metadata = result['metadata']
+                        content_type = metadata.get('content_type', '')
+                        
+                        # Create a descriptive title based on content type
+                        title = f"Context {idx}: "
+                        if content_type == 'dialogue_or_statement':
+                            title += "Dialogue"
+                        elif content_type == 'exam_question':
+                            title += "Question"
+                        elif content_type == 'exam_statement':
+                            title += "Statement"
+                        elif content_type == 'instruction':
+                            title += "Instructions"
+                        
+                        with st.expander(title):
+                            # Format content based on type
+                            if content_type == 'dialogue_or_statement':
+                                # Split dialogue into lines and format
+                                lines = result['content'].split(' - ')
+                                formatted_lines = ['- ' + line for line in lines]
+                                st.markdown('\n\n'.join(formatted_lines))
+                            else:
+                                st.markdown(result['content'])
+                            
+                            # Show part number and question number if available
+                            location = f"Part {metadata['part']}"
+                            if 'question_number' in metadata:
+                                location += f", Question {metadata['question_number']}"
+                            st.caption(location)
+            except Exception as e:
+                st.error(f"Error querying vector store: {str(e)}")
+        
+        with col2:
+            st.subheader("Generated Response")
+            if 'results' in locals() and results:
+                # Generate response button
+                if st.button("Generate Response", key="generate_response"):
+                    with st.spinner("Generating response..."):
+                        try:
+                            # Prepare context for Groq
+                            context = "\n\n".join([r['content'] for r in results])
+                            prompt = f"""Based on the following German learning content:
+
+{context}
+
+Answer this question: {query}
+
+Focus on explaining the German language concepts, vocabulary, and grammar relevant to the question. If the context contains example dialogues, use them to illustrate your points."""
+                            
+                            # Initialize chat if needed
+                            if st.session_state.chat is None:
+                                st.session_state.chat = GroqChat()
+                            
+                            # Generate and display response
+                            response = st.session_state.chat.generate_response(prompt)
+                            if response:
+                                st.markdown(response)
+                            else:
+                                st.error("Failed to generate response. Please try again.")
+                        except Exception as e:
+                            st.error(f"Error generating response: {str(e)}")
 
 def render_interactive_stage():
     """Render the interactive learning stage"""
