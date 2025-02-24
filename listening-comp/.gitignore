@@ -171,4 +171,4 @@ cython_debug/
 .pypirc
 
 # ChromaDB
-backend/vector_store/
+backend/data/vector_store/
