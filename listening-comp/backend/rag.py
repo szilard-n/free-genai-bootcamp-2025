@@ -12,6 +12,10 @@ class GermanLearningRAG:
         self.collection_name = "german_learning"
         self.structured_data_path = "backend/data/questions/structured_data.json"
 
+        # Check if structured data exists
+        if not os.path.exists(self.structured_data_path):
+            raise FileNotFoundError(f"Structured data file not found at {self.structured_data_path}")
+
         # Create persist directory if it doesn't exist
         os.makedirs(persist_directory, exist_ok=True)
 
@@ -23,20 +27,46 @@ class GermanLearningRAG:
         # Initialize ChromaDB client with persistence
         self.client = chromadb.PersistentClient(path=persist_directory)
 
-        # Get or create collection
+        # Load structured data
+        data = self._load_structured_data()
+        documents, metadatas, ids = self._prepare_documents(data)
+
+        # Check if collection exists first
+        collection_exists = False
         try:
             self.collection = self.client.get_collection(
                 name=self.collection_name,
                 embedding_function=self.embedding_function
             )
-        except ValueError:
-            # Collection doesn't exist, create it
+            collection_exists = True
+        except Exception:
+            pass
+
+        # Create new collection or update existing one
+        if collection_exists:
+            # Check if we need to update existing collection
+            if len(self.collection.get()['ids']) != len(ids):
+                self.collection.delete()
+                self.collection = self.client.create_collection(
+                    name=self.collection_name,
+                    embedding_function=self.embedding_function
+                )
+                self.collection.add(
+                    documents=documents,
+                    metadatas=metadatas,
+                    ids=ids
+                )
+        else:
+            # Collection doesn't exist, create it and add data
             self.collection = self.client.create_collection(
                 name=self.collection_name,
                 embedding_function=self.embedding_function
             )
-            # Initialize the vector store with data
-            self.update_vector_store()
+            self.collection.add(
+                documents=documents,
+                metadatas=metadatas,
+                ids=ids
+            )
 
     def _load_structured_data(self) -> Dict:
         """Load the structured data from JSON file"""
