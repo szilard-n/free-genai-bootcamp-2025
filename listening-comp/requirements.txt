@@ -5,3 +5,4 @@ groq
 python-dotenv
 dataclasses-json
 sentence-transformers
+elevenlabs

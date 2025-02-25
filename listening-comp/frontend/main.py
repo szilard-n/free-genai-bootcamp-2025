@@ -11,7 +11,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from backend.rag import GermanLearningRAG
 from backend.structured_data import TranscriptStructurer
 from backend.get_transcript import YouTubeTranscriptDownloader
-from backend.chat import GroqChat
+from backend.interactive import InteractiveQuestionGenerator
+from backend.llm_client import llm_client
 
 # Page config
 st.set_page_config(
@@ -29,6 +30,14 @@ if 'chat' not in st.session_state:
     st.session_state.chat = None
 if 'rag' not in st.session_state:
     st.session_state.rag = None
+if 'question_generator' not in st.session_state:
+    st.session_state.question_generator = None
+if 'current_scenarios' not in st.session_state:
+    st.session_state.current_scenarios = None
+if 'current_question_index' not in st.session_state:
+    st.session_state.current_question_index = 0
+if 'show_audio' not in st.session_state:
+    st.session_state.show_audio = False
 
 
 def render_header():
@@ -54,7 +63,7 @@ def render_sidebar():
         selected_stage = st.radio(
             "Select Stage:",
             [
-                "1. Chat with Nova",
+                "1. Chat with Groq",
                 "2. Raw Transcript",
                 "3. Structured Data",
                 "4. RAG Implementation",
@@ -64,7 +73,7 @@ def render_sidebar():
 
         # Stage descriptions
         stage_info = {
-            "1. Chat with Nova": """
+            "1. Chat with Groq": """
             **Current Focus:**
             - Basic German learning
             - Understanding LLM capabilities
@@ -108,15 +117,15 @@ def render_sidebar():
 
 def render_chat_stage():
     """Render the chat interface"""
-    st.header("Chat with Nova")
+    st.header("Chat with Groq")
 
-    # Initialize GroqChat instance if not in session state
+    # Initialize chat if not in session state
     if st.session_state.chat is None:
-        st.session_state.chat = GroqChat()
+        st.session_state.chat = llm_client
 
     # Introduction text
     st.markdown("""
-    Start by exploring Nova's base German language capabilities. Try asking questions about German grammar, 
+    Start by exploring Groq's base German language capabilities. Try asking questions about German grammar, 
     vocabulary, or cultural aspects.
     """)
 
@@ -126,9 +135,24 @@ def render_chat_stage():
             st.markdown(message["content"])
 
     # Chat input area
-    if prompt := st.chat_input("Ask about German language..."):
-        # Process the user input
-        process_message(prompt)
+    if prompt := st.chat_input("Ask a question about German..."):
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": prompt})
+
+        # Display user message
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # Get bot response
+        with st.chat_message("assistant"):
+            with st.spinner("Thinking..."):
+                response = st.session_state.chat.generate_response(prompt)
+                if response:
+                    st.markdown(response)
+                    st.session_state.messages.append(
+                        {"role": "assistant", "content": response})
+                else:
+                    st.error("Failed to generate response. Please try again.")
 
     # Example questions in sidebar
     with st.sidebar:
@@ -145,7 +169,7 @@ def render_chat_stage():
         for q in example_questions:
             if st.button(q, use_container_width=True, type="secondary"):
                 # Process the example question
-                process_message(q)
+                st.session_state.messages.append({"role": "user", "content": q})
                 st.rerun()
 
     # Add a clear chat button
@@ -477,7 +501,7 @@ Focus on explaining the German language concepts, vocabulary, and grammar releva
 
                             # Initialize chat if needed
                             if st.session_state.chat is None:
-                                st.session_state.chat = GroqChat()
+                                st.session_state.chat = llm_client
 
                             # Generate and display response
                             response = st.session_state.chat.generate_response(
@@ -496,13 +520,11 @@ def render_interactive_stage():
     st.header("Interactive Learning")
 
     # Check for required data
-    if 'rag' not in st.session_state or not st.session_state.rag:
+    if 'rag' not in st.session_state or st.session_state.rag is None:
         st.warning("Please initialize the RAG system in the RAG Implementation stage first.")
         return
 
     # Initialize session state for interactive learning
-    if 'current_scenario' not in st.session_state:
-        st.session_state.current_scenario = None
     if 'current_audio' not in st.session_state:
         st.session_state.current_audio = None
     if 'user_answer' not in st.session_state:
@@ -513,96 +535,139 @@ def render_interactive_stage():
         st.session_state.practice_scores = {'correct': 0, 'total': 0}
 
     # Topic selection
-    topics = {
-        "Ordering Food": "Dialogues about ordering in restaurants",
-        "Travel": "Conversations about flights, trains, or directions",
-        "Daily Life": "Everyday scenarios like shopping or museum visits"
-    }
-    selected_topic = st.selectbox("Select Practice Topic", list(topics.keys()))
+    topics = st.session_state.rag.get_topics()
+    selected_topic = st.selectbox("Select Practice Topic", topics)
 
     # Generate scenario button
     if st.button("Generate New Scenario"):
-        st.session_state.current_scenario = None
+        st.session_state.current_scenarios = None
+        st.session_state.current_question_index = 0
         st.session_state.current_audio = None
         st.session_state.user_answer = None
         st.session_state.feedback = None
-        # TODO: Integrate backend to generate scenario
-        # Use GroqChat to create a scenario based on selected_topic and structured_data
-        # Example: st.session_state.current_scenario = st.session_state.chat.generate_scenario(selected_topic, st.session_state.structured_data)
-        st.session_state.current_scenario = {
-            "context": f"You’re practicing {selected_topic.lower()}.",
-            "dialogue": "Placeholder dialogue",
-            "question": "What would you say next?",
-            "options": ["Option A", "Option B", "Option C"]  # Placeholder
-        }
-        st.rerun()
+        
+        # Initialize question generator if needed
+        if st.session_state.question_generator is None:
+            st.session_state.question_generator = InteractiveQuestionGenerator(
+                rag=st.session_state.rag
+            )
+        
+        # Generate scenario using the question generator
+        with st.spinner("Generating questions for your practice..."):
+            scenarios, error = st.session_state.question_generator.generate_scenario(selected_topic)
+            
+            if error:
+                st.error(error)
+                return
+            
+            st.session_state.current_scenarios = scenarios
+            st.session_state.current_question_index = 0
+            st.rerun()
 
     # Display scenario and exercise
-    if st.session_state.current_scenario:
+    if st.session_state.current_scenarios:
+        current_scenario = st.session_state.current_scenarios[st.session_state.current_question_index]
+        
         col1, col2 = st.columns(2)
 
         with col1:
             st.subheader("Scenario")
-            st.write(
-                f"**Context:** {st.session_state.current_scenario['context']}")
-            st.write(
-                f"**Dialogue:**\n\n{st.session_state.current_scenario['dialogue']}")
+            st.write(f"**Question {st.session_state.current_question_index + 1} of 3**")
+            st.write(f"**Exam Part:** {current_scenario['part']}")
+            st.write(f"**Context:** {current_scenario['context']}")
+            st.write(f"**Dialogue:**\n\n{current_scenario['dialogue']}")
 
             # Audio section
-            if st.session_state.current_audio:
-                st.audio(st.session_state.current_audio)
-            else:
-                if st.button("Generate Audio"):
-                    with st.spinner("Generating audio..."):
-                        # TODO: Integrate backend audio synthesis
-                        # Use an AudioGenerator class to create audio from scenario dialogue
-                        # Example: st.session_state.current_audio = AudioGenerator().generate(st.session_state.current_scenario['dialogue'])
-                        st.session_state.current_audio = "placeholder_audio.mp3"  # Placeholder
-                        st.rerun()
+            if st.button("Play Audio"):
+                with st.spinner("Generating audio..."):
+                    try:
+                        audio = llm_client.generate_and_play_audio(current_scenario['dialogue'])
+                        if audio:
+                            st.session_state.current_audio = audio
+                            st.rerun()
+                        else:
+                            st.error("Failed to generate audio. Please try again.")
+                    except Exception as e:
+                        st.error(f"Error generating audio: {str(e)}")
+            
+            # Show download button if audio is available
+            if st.session_state.get('current_audio'):
+                if st.button("Download Audio"):
+                    audio_path = llm_client.download_audio(
+                        st.session_state.current_audio,
+                        current_scenario['dialogue']
+                    )
+                    if not audio_path:
+                        st.error("Failed to prepare download")
 
         with col2:
             st.subheader("Practice Exercise")
-            st.write(
-                f"**Question:** {st.session_state.current_scenario['question']}")
+            st.write(f"**Question:** {current_scenario['question']}")
 
             # Display options and handle answer submission
-            if not st.session_state.feedback:
-                answer = st.radio("Choose your answer:",
-                                  st.session_state.current_scenario['options'])
+            if not current_scenario.get('answered', False):
+                answer = st.radio("Choose your answer:", current_scenario['options'])
                 if st.button("Submit Answer"):
-                    st.session_state.user_answer = answer
-                    # TODO: Integrate backend feedback generation
-                    # Use GroqChat to evaluate the answer against the scenario
-                    # Example: st.session_state.feedback = st.session_state.chat.evaluate_answer(st.session_state.current_scenario, answer)
-                    st.session_state.feedback = {
-                        "correct": True, "explanation": "Placeholder feedback"}
-                    st.session_state.practice_scores['total'] += 1
-                    if st.session_state.feedback['correct']:
+                    answer_index = current_scenario['options'].index(answer)
+                    current_scenario['answered'] = True
+                    current_scenario['user_answer'] = answer_index
+                    
+                    # Show feedback for the current question
+                    if answer_index == current_scenario['correct_answer']:
+                        st.success("Correct! Well done!")
                         st.session_state.practice_scores['correct'] += 1
-                    st.rerun()
+                    else:
+                        st.error(f"Incorrect. The correct answer was: {current_scenario['options'][current_scenario['correct_answer']]}")
+                    st.session_state.practice_scores['total'] += 1
+                    
+                    # Show next question button if not on the last question
+                    if st.session_state.current_question_index < 2:
+                        if st.button("Next Question"):
+                            st.session_state.current_question_index += 1
+                            st.session_state.current_audio = None
+                            st.rerun()
+                    else:
+                        # Show final results
+                        st.success("You've completed all questions!")
+                        st.write("### Your Results:")
+                        for i, scenario in enumerate(st.session_state.current_scenarios):
+                            correct = scenario['user_answer'] == scenario['correct_answer']
+                            st.write(f"Question {i+1} ({scenario['part']}): {'✅' if correct else '❌'}")
+                            if not correct:
+                                st.write(f"Your answer: {scenario['options'][scenario['user_answer']]}")
+                                st.write(f"Correct answer: {scenario['options'][scenario['correct_answer']]}")
+                        
+                        if st.button("Try New Questions"):
+                            st.session_state.current_scenarios = None
+                            st.session_state.current_question_index = 0
+                            st.session_state.current_audio = None
+                            st.rerun()
             else:
-                # Display feedback
-                if st.session_state.feedback['correct']:
-                    st.success(
-                        f"Correct! {st.session_state.feedback['explanation']}")
+                # Show the answer that was selected
+                st.info(f"You answered: {current_scenario['options'][current_scenario['user_answer']]}")
+                
+                # Show next question button if not on the last question
+                if st.session_state.current_question_index < 2:
+                    if st.button("Next Question"):
+                        st.session_state.current_question_index += 1
+                        st.session_state.current_audio = None
+                        st.rerun()
                 else:
-                    st.error(
-                        f"Incorrect. {st.session_state.feedback['explanation']}")
-                if st.button("Try Another"):
-                    st.session_state.current_scenario = None
-                    st.session_state.current_audio = None
-                    st.session_state.user_answer = None
-                    st.session_state.feedback = None
-                    st.rerun()
-
-    # Progress tracking
-    if st.session_state.practice_scores['total'] > 0:
-        st.sidebar.subheader("Progress")
-        accuracy = st.session_state.practice_scores['correct'] / \
-            st.session_state.practice_scores['total']
-        st.sidebar.write(
-            f"Correct: {st.session_state.practice_scores['correct']}/{st.session_state.practice_scores['total']}")
-        st.sidebar.write(f"Accuracy: {accuracy:.0%}")
+                    # Show final results
+                    st.success("You've completed all questions!")
+                    st.write("### Your Results:")
+                    for i, scenario in enumerate(st.session_state.current_scenarios):
+                        correct = scenario['user_answer'] == scenario['correct_answer']
+                        st.write(f"Question {i+1} ({scenario['part']}): {'✅' if correct else '❌'}")
+                        if not correct:
+                            st.write(f"Your answer: {scenario['options'][scenario['user_answer']]}")
+                            st.write(f"Correct answer: {scenario['options'][scenario['correct_answer']]}")
+                    
+                    if st.button("Try New Questions"):
+                        st.session_state.current_scenarios = None
+                        st.session_state.current_question_index = 0
+                        st.session_state.current_audio = None
+                        st.rerun()        
 
 
 def main():
@@ -614,7 +679,7 @@ def main():
     selected_stage = render_sidebar()
 
     # Render appropriate stage
-    if selected_stage == "1. Chat with Nova":
+    if selected_stage == "1. Chat with Groq":
         render_chat_stage()
     elif selected_stage == "2. Raw Transcript":
         render_transcript_stage()

@@ -99,6 +99,7 @@ class GermanLearningRAG:
             # Add questions and their context
             for q in part['questions']:
                 q_num = q['question_number']
+                topic = q['topic']
 
                 # Add the dialogue/text content
                 documents.append(q['text'])
@@ -106,7 +107,8 @@ class GermanLearningRAG:
                     'type': 'content',
                     'part': part_num,
                     'question_number': q_num,
-                    'content_type': 'dialogue_or_statement'
+                    'content_type': 'dialogue_or_statement',
+                    'topic': topic
                 })
                 ids.append(f"part_{part_num}_q{q_num}_content")
 
@@ -118,7 +120,8 @@ class GermanLearningRAG:
                         'type': 'question',
                         'part': part_num,
                         'question_number': q_num,
-                        'content_type': 'exam_question'
+                        'content_type': 'exam_question',
+                        'topic': topic
                     })
                     ids.append(f"part_{part_num}_q{q_num}_question")
 
@@ -129,7 +132,8 @@ class GermanLearningRAG:
                         'type': 'statement',
                         'part': part_num,
                         'question_number': q_num,
-                        'content_type': 'exam_statement'
+                        'content_type': 'exam_statement',
+                        'topic': topic
                     })
                     ids.append(f"part_{part_num}_q{q_num}_statement")
 
@@ -171,6 +175,87 @@ class GermanLearningRAG:
         except Exception as e:
             print(f"Error updating vector store: {str(e)}")
             raise
+
+    def get_topics(self) -> List[str]:
+        """Get all unique topics from the vector store"""
+        try:
+            # Get all documents with their metadata
+            results = self.collection.get(
+                where={"content_type": "dialogue_or_statement"}
+            )
+           
+            # Extract unique topics from metadata
+            topics = set()
+            for metadata in results['metadatas']:
+                if 'topic' in metadata:
+                    topics.add(metadata['topic'])
+            return sorted(list(topics))
+        except Exception as e:
+            print(f"Error getting topics: {str(e)}")
+            return []
+
+    def get_questions_by_topic(self, topic: str) -> List[Dict]:
+        """Get all questions for a specific topic"""
+        try:
+            # First get all documents for the topic
+            results = self.collection.get(
+                where={"topic": topic}
+            )
+            
+            print(f"Found {len(results['documents'])} documents for topic '{topic}'")
+            
+            formatted_results = []
+            if results['documents']:
+                # Group documents by content_type
+                content_by_type = {
+                    'dialogue_or_statement': [],
+                    'exam_question': [],
+                    'exam_statement': []
+                }
+                
+                # Sort documents into their types
+                for doc, meta in zip(results['documents'], results['metadatas']):
+                    content_type = meta.get('content_type')
+                    if content_type in content_by_type:
+                        content_by_type[content_type].append({
+                            'text': doc,
+                            'metadata': meta
+                        })
+                
+                print(f"Documents by type:")
+                for content_type, items in content_by_type.items():
+                    print(f"  {content_type}: {len(items)} items")
+                
+                # Match dialogues/statements with their corresponding questions
+                for dialogue in content_by_type['dialogue_or_statement']:
+                    part_num = dialogue['metadata']['part']
+                    
+                    # Find the corresponding question based on part number
+                    q_type = 'exam_question' if part_num in [1, 3] else 'exam_statement'
+                    matching_questions = [
+                        q for q in content_by_type[q_type] 
+                        if q['metadata']['part'] == part_num
+                    ]
+                    
+                    print(f"Found {len(matching_questions)} matching questions for part {part_num}")
+                    
+                    question_text = matching_questions[0]['text'] if matching_questions else None
+                    
+                    formatted_results.append({
+                        'text': dialogue['text'],  # The dialogue/statement text
+                        'question': question_text,  # The exam question/statement
+                        'metadata': {
+                            'part': part_num,
+                            'topic': topic,
+                            'type': 'multiple_choice' if part_num in [1, 3] else 'true_false'
+                        }
+                    })
+            
+            print(f"Returning {len(formatted_results)} formatted results")
+            return formatted_results
+        except Exception as e:
+            print(f"Error getting questions by topic: {str(e)}")
+            return []
 
     def query(self, query_text: str, max_results: int = 3, similarity_threshold: float = 0.1) -> List[Dict]:
         try:

@@ -7,7 +7,7 @@
   - `Exam`: Contains all exam parts
   - `ExamPart`: Groups questions by part (1, 2, or 3)
   - `Question`: Individual question with context and answers
-  - `Answer`: Multiple choice options (for Parts 1 and 3)
+  - `Answer`: Multiple choice options (for Parts 1 and 3) and true/false statements (for Part 2)
 
 #### Transcript to Question Processing
 - YouTube transcripts only contain the audio content (conversations/monologues)
@@ -39,17 +39,21 @@
 - Handles basic error handling for transcript downloads
 
 ### 3. LLM Client (`llm_client.py`)
-- Implements a singleton pattern for managing the Groq LLM client
-- Centralizes LLM configuration and access across the application:
+- Implements a singleton pattern for managing the Groq LLM client and ElevenLabs TTS
+- Centralizes LLM and audio configuration across the application:
   - API key management
   - Default model selection
   - Client instantiation
-- Used by all components that need LLM capabilities:
+- Used by all components that need LLM or audio capabilities:
   - Transcript structuring
   - Question generation
-  - Chat interface
+  - Audio generation
   - RAG system
 - Ensures consistent settings and efficient resource usage
+- Handles text-to-speech generation using ElevenLabs:
+  - High-quality voice synthesis
+  - Non-blocking audio playback
+  - Audio file download capabilities
 
 ### 4. RAG System (`rag.py`)
 The RAG (Retrieval-Augmented Generation) system provides semantic search over German learning content:
@@ -96,7 +100,7 @@ The RAG (Retrieval-Augmented Generation) system provides semantic search over Ge
 3. Returns relevant conversations prioritizing actual dialogue content
 4. Scores indicate how well each result matches the query
 
-### 5. Chat Interface (`chat.py`)
+### 5. Chat Interface (`llm_client.py`)
 - Simple chat interface using Groq LLM
 - Features:
   - Basic message-response functionality
@@ -109,12 +113,13 @@ The RAG (Retrieval-Augmented Generation) system provides semantic search over Ge
 ```
 backend/
 ├── data/
+|   ├── audio/        # Generated audio files from exam
 │   ├── questions/    # JSON files with exam questions (one per video)
 │   └── transcripts/  # Raw transcripts from YouTube (one per video)
 ├── rag.py           # RAG implementation with ChromaDB and Groq
-├── chat.py          # Basic chat interface with Groq
 ├── get_transcript.py # YouTube transcript downloader
-├── llm_client.py    # Singleton LLM client for Groq
+├── llm_client.py    # Singleton LLM client for Groq and Elevenlabs
+├── interactve.py    # Interactive learning by generating exam questions based on context
 └── structured_data.py # Data classes and transcript structuring
 ```
 
@@ -144,9 +149,11 @@ backend/
    - Results are ranked by relevance using normalized distance scores
    - Prioritizes actual dialogues and statements over exam questions
 
-4. **Interactive Features** (Coming Soon)
-   - Question generation from dialogues
-   - Interactive practice sessions
+4. **Interactive Features**
+   - AI-generated dialogues and scenarios
+   - Dynamic question generation based on context
+   - Real-time audio generation and playback
+   - Downloadable audio for offline practice
    - Real-time feedback on responses
    - Progress tracking and difficulty adjustment
 
@@ -162,7 +169,16 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-3. Run the frontend
+3. Set up environment variables in `.env`:
+```sh
+GROQ_API_KEY=your_groq_api_key
+LLM_MODEL_ID=mixtral-8x7b-32768
+ELEVENLABS_API_KEY=your_elevenlabs_api_key
+ELEVENLABS_MODEL_ID=eleven_multilingual_v2
+ELEVENLABS_FEMALE_VOICE_ID=your_voice_id
+```
+
+4. Run the frontend
 ```sh
 streamlit run frontend/main.py
 ```

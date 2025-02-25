@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 import json
 
-from backend.llm_client import groq_client
+from backend.llm_client import llm_client
 
 load_dotenv()
 
@@ -29,6 +29,8 @@ class Question:
     """Represents a single question in the exam part"""
     question_number: int
     text: str
+    # Category/theme of the question (e.g., "Restaurant", "Shopping", "Transportation")
+    topic: str
     exam_question: Optional[str] = None  # For parts 1 and 3
     exam_statement: Optional[str] = None  # For part 2
     answers: Optional[List[Answer]] = None  # For parts 1 and 3
@@ -37,7 +39,8 @@ class Question:
     def to_dict(self):
         result = {
             "question_number": self.question_number,
-            "text": self.text
+            "text": self.text,
+            "topic": self.topic
         }
 
         if self.exam_question is not None:
@@ -91,6 +94,17 @@ class TranscriptStructurer:
         extract all parts and their questions, and generate appropriate exam questions based on the content.
 
         Important: You can skip the examples given by the narrator and focus only on the exam questions. Examples are usually the first questions at each part starting with Beispiel.
+        Important: Each question must have a 'topic' field that represents the general category or theme of the conversation/text. Topics should be 1-2 words and describe the context, such as:
+        - "Restaurant" for conversations about ordering food or dining
+        - "Shopping" for discussions about buying items or prices
+        - "Transportation" for topics about trains, buses, or directions
+        - "Weather" for discussions about climate or forecasts
+        - "Housing" for conversations about apartments, rent, or furniture
+        - "Work" for job-related discussions
+        - "Education" for school or learning-related topics
+        - "Family" for conversations about relatives or relationships
+        - "Leisure" for discussions about hobbies or free time
+        
         Important: Return ONLY valid JSON with this exact structure, nothing else:
         [
             {{
@@ -100,6 +114,7 @@ class TranscriptStructurer:
                     {{
                         "question_number": 1,
                         "text": "- Properly formatted conversation between two people with proper punctuation.",
+                        "topic": "Restaurant",
                         "exam_question": "A relevant question about the conversation",
                         "answers": [
                             {{
@@ -128,6 +143,7 @@ class TranscriptStructurer:
                     {{
                         "question_number": 1,
                         "text": "Properly formatted monologue/announcement text",
+                        "topic": "Shopping",
                         "exam_statement": "A relevant statement about the announcement that can be true or false",
                         "is_true": true
                     }}
@@ -140,6 +156,7 @@ class TranscriptStructurer:
                     {{
                         "question_number": 1,
                         "text": "Properly formatted monologue text from one speaker",
+                        "topic": "Transportation",
                         "exam_question": "A relevant question about the monologue",
                         "answers": [
                             {{
@@ -196,6 +213,7 @@ class TranscriptStructurer:
         Format as:
         {{
             "text": "- Entschuldigung, was kostet dieser Pullover jetzt? Da steht 30% billiger. - Einen Moment bitte. 19,95. - Euro? - Ja, Euro. Natürlich. - Okay, den nehme ich.",
+            "topic": "Shopping",
             "exam_question": "Wie viel kostet der Pullover?",
             "answers": [
                 {{"option": "A", "text": "19,95 Euro", "correct": true}},
@@ -211,23 +229,11 @@ class TranscriptStructurer:
     def structure_transcript(self, transcript: str) -> Exam:
         """Structure a transcript into an Exam object with parts and questions."""
         try:
-            completion = groq_client.client.chat.completions.create(
-                model=groq_client.model,
-                messages=[
-                    {"role": "system", "content": "You are a German language expert that extracts structured data from transcripts. Always return valid JSON."},
-                    {"role": "user", "content": self.load_prompt(transcript)}
-                ],
-                temperature=0.1,
-            )
-
-            response_text = completion.choices[0].message.content
-            if "```json" in response_text:
-                response_text = response_text.split(
-                    "```json")[1].split("```")[0].strip()
-            elif "```" in response_text:
-                response_text = response_text.split(
-                    "```")[1].split("```")[0].strip()
-
+            response_text = llm_client.generate_response([
+                {"role": "system", "content": "You are a German language expert that extracts structured data from transcripts. Always return valid JSON."},
+                {"role": "user", "content": self.load_prompt(transcript)}
+            ])
+            
             response = json.loads(response_text)
             exam_parts = []
 
@@ -248,6 +254,7 @@ class TranscriptStructurer:
                     question = Question(
                         question_number=q["question_number"],
                         text=q["text"],
+                        topic=q["topic"],
                         # Use get() to handle optional fields
                         exam_question=q.get("exam_question"),
                         exam_statement=q.get("exam_statement"),
@@ -285,6 +292,7 @@ class TranscriptStructurer:
 
 if __name__ == "__main__":
     transcript_structurer = TranscriptStructurer()
-    transcript = transcript_structurer.load_transcript("./data/transcripts/mLUTv35RigE.txt")
+    transcript = transcript_structurer.load_transcript(
+        "./data/transcripts/mLUTv35RigE.txt")
     exam = transcript_structurer.structure_transcript(transcript)
     transcript_structurer.save_exam_data(exam)
