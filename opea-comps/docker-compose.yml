@@ -1,16 +1,35 @@
 services:
   ollama:
     image: ollama/ollama:latest
-    container_name: ${CONTAINER_NAME}
+    container_name: ollama-service
     restart: unless-stopped
     volumes:
       - ollama_data:/root/.ollama
     ports:
-      - "${HOST_PORT}:11434"
+      - "${LLM_SERVICE_PORT}:11434"
     environment:
       - LLM_ENDPOINT_PORT=${LLM_ENDPOINT_PORT}
       - LLM_MODEL_ID=${LLM_MODEL_ID}
       - NO_PROXY=${NO_PROXY}
+    entrypoint: >
+      /bin/sh -c "
+        ollama serve &
+        sleep 10 &&
+        ollama pull ${LLM_MODEL_ID} &&
+        wait
+      "
+
+  megaservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - ${MEGA_SERVICE_PORT}:8888
+    environment:
+      - LLM_SERVICE_HOST_IP=ollama-service
+      - LLM_SERVICE_PORT=${LLM_SERVICE_PORT}
+    depends_on:
+      - ollama
 
 volumes:
   ollama_data:
